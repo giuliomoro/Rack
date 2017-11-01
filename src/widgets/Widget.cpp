@@ -9,13 +9,16 @@ Widget::~Widget() {
 	// You should only delete orphaned widgets
 	assert(!parent);
 	// Stop dragging and hovering this widget
+#ifndef RACK_NOGUI
 	if (gHoveredWidget == this) gHoveredWidget = NULL;
 	if (gDraggedWidget == this) gDraggedWidget = NULL;
 	if (gDragHoveredWidget == this) gDragHoveredWidget = NULL;
 	if (gFocusedWidget == this) gFocusedWidget = NULL;
+#endif /*RACK_NOGUI*/
 	clearChildren();
 }
 
+#ifndef RACK_NOGUI
 Rect Widget::getChildrenBoundingBox() {
 	Rect bound;
 	for (Widget *child : children) {
@@ -51,6 +54,7 @@ Rect Widget::getViewport(Rect r) {
 	bound.pos = bound.pos.minus(box.pos);
 	return r.clamp(bound);
 }
+#endif /*RACK_NOGUI*/
 
 void Widget::addChild(Widget *widget) {
 	assert(!widget->parent);
@@ -75,6 +79,7 @@ void Widget::clearChildren() {
 	children.clear();
 }
 
+#ifndef RACK_NOGUI
 void Widget::finalizeEvents() {
 	// Stop dragging and hovering this widget
 	if (gHoveredWidget == this) {
@@ -96,6 +101,7 @@ void Widget::finalizeEvents() {
 		child->finalizeEvents();
 	}
 }
+#endif /*RACK_NOGUI*/
 
 void Widget::step() {
 	for (Widget *child : children) {
@@ -103,6 +109,7 @@ void Widget::step() {
 	}
 }
 
+#ifndef RACK_NOGUI
 void Widget::draw(NVGcontext *vg) {
 	for (Widget *child : children) {
 		if (!child->visible)
@@ -190,5 +197,6 @@ void Widget::onZoom() {
 		child->onZoom();
 	}
 }
+#endif /*RACK_NOGUI*/
 
 } // namespace rack

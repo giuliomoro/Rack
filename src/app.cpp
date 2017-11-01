@@ -13,7 +13,9 @@ std::string gApplicationVersion =
 std::string gApiHost = "http://api.vcvrack.com";
 
 RackWidget *gRackWidget = NULL;
+#ifndef RACK_NOGUI
 Toolbar *gToolbar = NULL;
+#endif /*RACK_NOGUI*/
 RackScene *gRackScene = NULL;
 
 

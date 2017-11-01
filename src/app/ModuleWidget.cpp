@@ -1,7 +1,9 @@
 #include "app.hpp"
 #include "engine.hpp"
 #include "plugin.hpp"
+#ifndef RACK_NOGUI
 #include "gui.hpp"
+#endif /*RACK_NOGUI*/
 
 
 namespace rack {
@@ -49,9 +51,11 @@ json_t *ModuleWidget::toJson() {
 	json_object_set_new(rootJ, "manufacturer", json_string(model->manufacturerSlug.c_str()));
 	// model
 	json_object_set_new(rootJ, "model", json_string(model->slug.c_str()));
+#ifndef RACK_NOGUI
 	// pos
 	json_t *posJ = json_pack("[f, f]", (double) box.pos.x, (double) box.pos.y);
 	json_object_set_new(rootJ, "pos", posJ);
+#endif /*RACK_NOGUI*/
 	// params
 	json_t *paramsJ = json_array();
 	for (ParamWidget *paramWidget : params) {
@@ -71,11 +75,13 @@ json_t *ModuleWidget::toJson() {
 }
 
 void ModuleWidget::fromJson(json_t *rootJ) {
+#ifndef RACK_NOGUI
 	// pos
 	json_t *posJ = json_object_get(rootJ, "pos");
 	double x, y;
 	json_unpack(posJ, "[F, F]", &x, &y);
 	box.pos = Vec(x, y);
+#endif /*RACK_NOGUI*/
 
 	// params
 	json_t *paramsJ = json_object_get(rootJ, "params");
@@ -121,6 +127,7 @@ void ModuleWidget::randomize() {
 	}
 }
 
+#ifndef RACK_NOGUI
 void ModuleWidget::draw(NVGcontext *vg) {
 	nvgScissor(vg, 0, 0, box.size.x, box.size.y);
 
@@ -285,6 +292,7 @@ void ModuleWidget::onMouseDownOpaque(int button) {
 		createContextMenu();
 	}
 }
+#endif /*RACK_NOGUI*/
 
 
 } // namespace rack

@@ -1,7 +1,11 @@
 #include "app.hpp"
+#ifndef RACK_NOGUI
 #include "gui.hpp"
+#endif /*RACK_NOGUI*/
 #include "util/request.hpp"
+#ifndef RACK_NOGUI
 #include "../ext/osdialog/osdialog.h"
+#endif /*RACK_NOGUI*/
 #include <string.h>
 #include <thread>
 
@@ -28,6 +32,7 @@ static void checkVersion() {
 
 
 RackScene::RackScene() {
+#ifndef RACK_NOGUI
 	scrollWidget = new RackScrollWidget();
 	{
 		zoomWidget = new ZoomWidget();
@@ -43,6 +48,7 @@ RackScene::RackScene() {
 	gToolbar = new Toolbar();
 	addChild(gToolbar);
 	scrollWidget->box.pos.y = gToolbar->box.size.y;
+#endif /*RACK_NOGUI*/
 
 	// Check for new version
 	if (!gApplicationVersion.empty()) {
@@ -52,6 +58,7 @@ RackScene::RackScene() {
 }
 
 void RackScene::step() {
+#ifndef RACK_NOGUI
 	// Resize owned descendants
 	gToolbar->box.size.x = box.size.x;
 	scrollWidget->box.size = box.size.minus(scrollWidget->box.pos);
@@ -61,23 +68,29 @@ void RackScene::step() {
 		.minus(scrollWidget->container->box.pos)
 		.plus(Vec(500, 500))
 		.div(zoomWidget->zoom);
+#endif /*RACK_NOGUI*/
 
 	Scene::step();
 
+#ifndef RACK_NOGUI
 	zoomWidget->box.size = gRackWidget->box.size.mult(zoomWidget->zoom);
+#endif /*RACK_NOGUI*/
 
 	// Version popup message
 	if (!newVersion.empty()) {
 		std::string versionMessage = stringf("Rack %s is available.\n\nYou have Rack %s.\n\nWould you like to download the new version on the website?", newVersion.c_str(), gApplicationVersion.c_str());
+#ifndef RACK_NOGUI
 		if (osdialog_message(OSDIALOG_INFO, OSDIALOG_YES_NO, versionMessage.c_str())) {
 			std::thread t(openBrowser, "https://vcvrack.com/");
 			t.detach();
 			guiClose();
 		}
+#endif /*RACK_NOGUI*/
 		newVersion = "";
 	}
 }
 
+#ifndef RACK_NOGUI
 void RackScene::draw(NVGcontext *vg) {
 	Scene::draw(vg);
 }
@@ -116,6 +129,7 @@ Widget *RackScene::onHoverKey(Vec pos, int key) {
 
 	return Widget::onHoverKey(pos, key);
 }
+#endif /*RACK_NOGUI*/
 
 
 

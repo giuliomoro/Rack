@@ -5,9 +5,13 @@
 #include "asset.hpp"
 #include "plugin.hpp"
 #include "engine.hpp"
+#ifndef RACK_NOGUI
 #include "gui.hpp"
+#endif /*RACK_NOGUI*/
 #include "app.hpp"
+#ifndef RACK_NOGUI
 #include "components.hpp"
+#endif /*RACK_NOGUI*/
 
 
 namespace rack {

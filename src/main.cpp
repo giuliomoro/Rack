@@ -1,6 +1,8 @@
 #include "engine.hpp"
-#include "gui.hpp"
 #include "app.hpp"
+#ifndef RACK_NOGUI
+#include "gui.hpp"
+#endif /*RACK_NOGUI*/
 #include "plugin.hpp"
 #include "settings.hpp"
 #include "asset.hpp"
@@ -16,7 +18,9 @@ int main(int argc, char* argv[]) {
 
 	pluginInit();
 	engineInit();
+#ifndef RACK_NOGUI
 	guiInit();
+#endif /*RACK_NOGUI*/
 	sceneInit();
 	if (argc >= 2) {
 		// TODO Set gRackWidget->lastPath
@@ -28,13 +32,17 @@ int main(int argc, char* argv[]) {
 	settingsLoad(assetLocal("settings.json"));
 
 	engineStart();
+#ifndef RACK_NOGUI
 	guiRun();
+#endif /*RACK_NOGUI*/
 	engineStop();
 
 	settingsSave(assetLocal("settings.json"));
 	gRackWidget->savePatch(assetLocal("autosave.vcv"));
 	sceneDestroy();
+#ifndef RACK_NOGUI
 	guiDestroy();
+#endif /*RACK_NOGUI*/
 	engineDestroy();
 	pluginDestroy();
 	return 0;

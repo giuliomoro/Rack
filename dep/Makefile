@@ -21,6 +21,7 @@ else
 	CMAKE = cmake
 endif
 
+EMBEDDED=true
 # Libraries
 ifeq ($(ARCH),lin)
 	glew = lib/libGLEW.so
@@ -58,7 +59,10 @@ endif
 
 .NOTPARALLEL:
 
-all: $(glew) $(glfw) $(jansson) $(libsamplerate) $(libcurl) $(libzip) $(rtmidi) $(portaudio)
+ifeq ($(EMBEDDED),no)
+all: $(glew) $(glfw) $(portaudio)
+endif
+all:$(jansson) $(libsamplerate) $(libcurl) $(libzip) $(rtmidi)
 	@echo ""
 	@echo "#######################################"
 	@echo "# Built all dependencies successfully #"

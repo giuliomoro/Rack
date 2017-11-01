@@ -56,6 +56,7 @@ struct ModuleWidget : OpaqueWidget {
 	Called when the user clicks Randomize in the context menu.
 	*/
 	virtual void randomize();
+#ifndef RACK_NOGUI
 	virtual Menu *createContextMenu();
 
 	void draw(NVGcontext *vg) override;
@@ -67,27 +68,29 @@ struct ModuleWidget : OpaqueWidget {
 	void onDragMove(Vec mouseRel) override;
 	void onDragEnd() override;
 	void onMouseDownOpaque(int button) override;
+#endif /*RACK_NOGUI*/
 };
 
-struct ValueLight;
 struct WireWidget : OpaqueWidget {
 	Port *outputPort = NULL;
 	Port *inputPort = NULL;
 	Port *hoveredOutputPort = NULL;
 	Port *hoveredInputPort = NULL;
-	ValueLight *inputLight;
-	ValueLight *outputLight;
 	Wire *wire = NULL;
+#ifndef RACK_NOGUI
 	NVGcolor color;
+#endif /*RACK_NOGUI*/
 
 	WireWidget();
 	~WireWidget();
 	/** Synchronizes the plugged state of the widget to the owned wire */
 	void updateWire();
+#ifndef RACK_NOGUI
 	Vec getOutputPos();
 	Vec getInputPos();
 	void draw(NVGcontext *vg) override;
 	void drawPlugs(NVGcontext *vg);
+#endif /*RACK_NOGUI*/
 };
 
 struct WireContainer : TransparentWidget {
@@ -100,11 +103,15 @@ struct WireContainer : TransparentWidget {
 	void removeAllWires(Port *port);
 	/** Returns the most recently added wire connected to the given Port, i.e. the top of the stack */
 	WireWidget *getTopWire(Port *port);
+#ifndef RACK_NOGUI
 	void draw(NVGcontext *vg) override;
+#endif /*RACK_NOGUI*/
 };
 
 struct RackWidget : OpaqueWidget {
+#ifndef RACK_NOGUI
 	FramebufferWidget *rails;
+#endif /*RACK_NOGUI*/
 	// Only put ModuleWidgets in here
 	Widget *moduleContainer;
 	// Only put WireWidgets in here
@@ -119,9 +126,11 @@ struct RackWidget : OpaqueWidget {
 	void clear();
 	/** Clears the rack and loads the template patch */
 	void reset();
+#ifndef RACK_NOGUI
 	void openDialog();
 	void saveDialog();
 	void saveAsDialog();
+#endif /*RACK_NOGUI*/
 	void savePatch(std::string filename);
 	void loadPatch(std::string filename);
 	json_t *toJson();
@@ -131,18 +140,23 @@ struct RackWidget : OpaqueWidget {
 	/** Transfers ownership to the caller so they must `delete` it if that is the intension */
 	void deleteModule(ModuleWidget *m);
 	void cloneModule(ModuleWidget *m);
+#ifndef RACK_NOGUI
 	/** Sets a module's box if non-colliding. Returns true if set */
 	bool requestModuleBox(ModuleWidget *m, Rect box);
 	/** Moves a module to the closest non-colliding position */
 	bool requestModuleBoxNearest(ModuleWidget *m, Rect box);
+#endif /*RACK_NOGUI*/
 	void step() override;
+#ifndef RACK_NOGUI
 	void draw(NVGcontext *vg) override;
 
 	Widget *onMouseMove(Vec pos, Vec mouseRel) override;
 	void onMouseDownOpaque(int button) override;
 	void onZoom() override;
+#endif /*RACK_NOGUI*/
 };
 
+#ifndef RACK_NOGUI
 struct RackRail : TransparentWidget {
 	void draw(NVGcontext *vg) override;
 };
@@ -157,15 +171,18 @@ struct SVGPanel : FramebufferWidget {
 	void step() override;
 	void setBackground(std::shared_ptr<SVG> svg);
 };
+#endif /*RACK_NOGUI*/
 
 ////////////////////
 // params
 ////////////////////
 
+#ifndef RACK_NOGUI
 struct CircularShadow : TransparentWidget {
 	float blur = 0.0;
 	void draw(NVGcontext *vg) override;
 };
+#endif /*RACK_NOGUI*/
 
 struct ParamWidget : OpaqueWidget, QuantityWidget {
 	Module *module = NULL;
@@ -178,10 +195,13 @@ struct ParamWidget : OpaqueWidget, QuantityWidget {
 	json_t *toJson();
 	void fromJson(json_t *rootJ);
 	virtual void randomize();
+#ifndef RACK_NOGUI
 	void onMouseDownOpaque(int button) override;
+#endif /*RACK_NOGUI*/
 	void onChange() override;
 };
 
+#ifndef RACK_NOGUI
 /** Implements vertical dragging behavior for ParamWidgets */
 struct Knob : ParamWidget {
 	/** Snap to nearest integer while dragging */
@@ -263,6 +283,7 @@ struct MomentarySwitch : virtual Switch {
 		setValue(minValue);
 	}
 };
+#endif /*RACK_NOGUI*/
 
 ////////////////////
 // ports
@@ -279,6 +300,7 @@ struct Port : OpaqueWidget {
 	int portId;
 
 	~Port();
+#ifndef RACK_NOGUI
 	void draw(NVGcontext *vg) override;
 	void onMouseDownOpaque(int button) override;
 	void onDragEnd() override;
@@ -286,8 +308,10 @@ struct Port : OpaqueWidget {
 	void onDragDrop(Widget *origin) override;
 	void onDragEnter(Widget *origin) override;
 	void onDragLeave(Widget *origin) override;
+#endif /*RACK_NOGUI*/
 };
 
+#ifndef RACK_NOGUI
 struct SVGPort : Port, FramebufferWidget {
 	SVGWidget *background;
 
@@ -301,7 +325,9 @@ struct SVGScrew : FramebufferWidget {
 
 	SVGScrew();
 };
+#endif /*RACK_NOGUI*/
 
+#ifndef RACK_NOGUI
 ////////////////////
 // lights
 ////////////////////
@@ -324,7 +350,9 @@ struct ColorLightWidget : ModuleLightWidget {
 	void addColor(NVGcolor c);
 	void step() override;
 };
+#endif /*RACK_NOGUI*/
 
+#ifndef RACK_NOGUI
 ////////////////////
 // scene
 ////////////////////
@@ -339,6 +367,7 @@ struct Toolbar : OpaqueWidget {
 	Toolbar();
 	void draw(NVGcontext *vg) override;
 };
+#endif /*RACK_NOGUI*/
 
 struct PluginManagerWidget : Widget {
 	Widget *loginWidget;
@@ -348,18 +377,24 @@ struct PluginManagerWidget : Widget {
 	void step() override;
 };
 
+#ifndef RACK_NOGUI
 struct RackScrollWidget : ScrollWidget {
 	void step() override;
 };
+#endif /*RACK_NOGUI*/
 
 struct RackScene : Scene {
+#ifndef RACK_NOGUI
 	ScrollWidget *scrollWidget;
 	ZoomWidget *zoomWidget;
+#endif /*RACK_NOGUI*/
 
 	RackScene();
 	void step() override;
+#ifndef RACK_NOGUI
 	void draw(NVGcontext *vg) override;
 	Widget *onHoverKey(Vec pos, int key) override;
+#endif /*RACK_NOGUI*/
 };
 
 ////////////////////
@@ -373,7 +408,9 @@ extern std::string gApiHost;
 // Easy access to "singleton" widgets
 extern RackScene *gRackScene;
 extern RackWidget *gRackWidget;
+#ifndef RACK_NOGUI
 extern Toolbar *gToolbar;
+#endif
 
 void sceneInit();
 void sceneDestroy();

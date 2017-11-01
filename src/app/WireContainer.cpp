@@ -93,6 +93,7 @@ WireWidget *WireContainer::getTopWire(Port *port) {
 	return NULL;
 }
 
+#ifndef RACK_NOGUI
 void WireContainer::draw(NVGcontext *vg) {
 	Widget::draw(vg);
 
@@ -103,6 +104,7 @@ void WireContainer::draw(NVGcontext *vg) {
 		wire->drawPlugs(vg);
 	}
 }
+#endif /*RACK_NOGUI*/
 
 
 } // namespace rack

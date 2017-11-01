@@ -2,9 +2,11 @@
 #include <list>
 #include <memory>
 
+#ifndef RACK_NOGUI
 #include "../ext/nanovg/src/nanovg.h"
 #include "../ext/oui-blendish/blendish.h"
 #include "../ext/nanosvg/src/nanosvg.h"
+#endif /*RACK_NOGUI*/
 
 #include "math.hpp"
 #include "util.hpp"
@@ -20,6 +22,7 @@ namespace rack {
 // Constructing these directly will load from the disk each time. Use the load() functions to load from disk and cache them as long as the shared_ptr is held.
 // Implemented in gui.cpp
 
+#ifndef RACK_NOGUI
 struct Font {
 	int handle;
 	Font(const std::string &filename);
@@ -40,6 +43,7 @@ struct SVG {
 	~SVG();
 	static std::shared_ptr<SVG> load(const std::string &filename);
 };
+#endif /*RACK_NOGUI*/
 
 
 ////////////////////
@@ -48,14 +52,17 @@ struct SVG {
 
 /** A node in the 2D scene graph */
 struct Widget {
+#ifndef RACK_NOGUI
 	/** Stores position and size */
 	Rect box = Rect(Vec(), Vec(INFINITY, INFINITY));
+#endif /*RACK_NOGUI*/
 	Widget *parent = NULL;
 	std::list<Widget*> children;
 	bool visible = true;
 
 	virtual ~Widget();
 
+#ifndef RACK_NOGUI
 	Rect getChildrenBoundingBox();
 	/**  Returns `v` transformed into the coordinate system of `relative` */
 	virtual Vec getRelativeOffset(Vec v, Widget *relative);
@@ -65,6 +72,7 @@ struct Widget {
 	}
 	/** Returns a subset of the given Rect bounded by the box of this widget and all ancestors */
 	virtual Rect getViewport(Rect r);
+#endif /*RACK_NOGUI*/
 
 	template <class T>
 	T *getAncestorOfType() {
@@ -100,6 +108,7 @@ struct Widget {
 
 	/** Advances the module by one frame */
 	virtual void step();
+#ifndef RACK_NOGUI
 	/** Draws to NanoVG context */
 	virtual void draw(NVGcontext *vg);
 
@@ -137,10 +146,14 @@ struct Widget {
 	virtual void onDragDrop(Widget *origin) {}
 
 	virtual void onAction() {}
+#endif /*RACK_NOGUI*/
 	virtual void onChange() {}
+#ifndef RACK_NOGUI
 	virtual void onZoom();
+#endif /*RACK_NOGUI*/
 };
 
+#ifndef RACK_NOGUI
 struct TransformWidget : Widget {
 	/** The transformation matrix */
 	float transform[6];
@@ -164,6 +177,7 @@ struct ZoomWidget : Widget {
 	Widget *onHoverKey(Vec pos, int key) override;
 	Widget *onScroll(Vec pos, Vec scrollRel) override;
 };
+#endif
 
 ////////////////////
 // Trait widgets
@@ -171,14 +185,17 @@ struct ZoomWidget : Widget {
 
 /** Widget that does not respond to events */
 struct TransparentWidget : virtual Widget {
+#ifndef RACK_NOGUI
 	Widget *onMouseDown(Vec pos, int button) override {return NULL;}
 	Widget *onMouseUp(Vec pos, int button) override {return NULL;}
 	Widget *onMouseMove(Vec pos, Vec mouseRel) override {return NULL;}
 	Widget *onScroll(Vec pos, Vec scrollRel) override {return NULL;}
+#endif /*RACK_NOGUI*/
 };
 
 /** Widget that automatically responds to all mouse events but gives a chance for children to respond instead */
 struct OpaqueWidget : virtual Widget {
+#ifndef RACK_NOGUI
 	Widget *onMouseDown(Vec pos, int button) override {
 		Widget *w = Widget::onMouseDown(pos, button);
 		if (w) return w;
@@ -212,8 +229,10 @@ struct OpaqueWidget : virtual Widget {
 	virtual void onMouseUpOpaque(int button) {}
 	virtual void onMouseMoveOpaque(Vec mouseRel) {}
 	virtual bool onScrollOpaque(Vec scrollRel) {return false;}
+#endif /*RACK_NOGUI*/
 };
 
+#ifndef RACK_NOGUI
 struct SpriteWidget : virtual Widget {
 	Vec spriteOffset;
 	Vec spriteSize;
@@ -252,6 +271,7 @@ struct FramebufferWidget : virtual Widget {
 	int getImageHandle();
 	void onZoom() override;
 };
+#endif /*RACK_NOGUI*/
 
 struct QuantityWidget : virtual Widget {
 	float value = 0.0;
@@ -274,6 +294,7 @@ struct QuantityWidget : virtual Widget {
 	std::string getText();
 };
 
+#ifndef RACK_NOGUI
 ////////////////////
 // GUI widgets
 ////////////////////
@@ -437,11 +458,14 @@ struct Tooltip : Widget {
 	void step() override;
 	void draw(NVGcontext *vg) override;
 };
+#endif /*RACK_NOGUI*/
 
 struct Scene : OpaqueWidget {
+#ifndef RACK_NOGUI
 	Widget *overlay = NULL;
 	void setOverlay(Widget *w);
 	Menu *createMenu();
+#endif /*RACK_NOGUI*/
 	void step() override;
 };
 

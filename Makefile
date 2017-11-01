@@ -1,20 +1,62 @@
+ARM=yes
+EMBEDDED=yes
+
 FLAGS += \
 	-Iinclude \
 	-Idep/include -Idep/lib/libzip/include
 
 SOURCES = $(wildcard src/*.cpp src/*/*.cpp) \
 	ext/nanovg/src/nanovg.c
-
+ifeq ($(EMBEDDED),yes)
+SOURCES := $(filter-out src/gui.cpp, $(SOURCES))
+SOURCES := $(filter-out src/widgets/FramebufferWidget.cpp, $(SOURCES))
+SOURCES := $(filter-out src/widgets/ZoomWidget.cpp, $(SOURCES))
+SOURCES := $(filter-out src/widgets/MenuLabel.cpp, $(SOURCES))
+SOURCES := $(filter-out src/widgets/RadioButton.cpp, $(SOURCES))
+SOURCES := $(filter-out src/widgets/QuantityWidget.cpp, $(SOURCES))
+SOURCES := $(filter-out src/widgets/MenuEntry.cpp, $(SOURCES))
+SOURCES := $(filter-out src/widgets/TextField.cpp, $(SOURCES))
+SOURCES := $(filter-out src/widgets/ProgressBar.cpp, $(SOURCES))
+SOURCES := $(filter-out src/widgets/Tooltip.cpp, $(SOURCES))
+SOURCES := $(filter-out src/widgets/Slider.cpp, $(SOURCES))
+SOURCES := $(filter-out src/widgets/ScrollBar.cpp, $(SOURCES))
+SOURCES := $(filter-out src/widgets/ChoiceButton.cpp, $(SOURCES))
+SOURCES := $(filter-out src/widgets/Label.cpp, $(SOURCES))
+SOURCES := $(filter-out src/widgets/SpriteWidget.cpp, $(SOURCES))
+SOURCES := $(filter-out src/widgets/SVGWidget.cpp, $(SOURCES))
+SOURCES := $(filter-out src/widgets/ZoomWidget.cpp, $(SOURCES))
+SOURCES := $(filter-out src/widgets/TransformWidget.cpp, $(SOURCES))
+SOURCES := $(filter-out src/widgets/PasswordField.cpp, $(SOURCES))
+SOURCES := $(filter-out src/widgets/Menu.cpp, $(SOURCES))
+SOURCES := $(filter-out src/widgets/MenuItem.cpp, $(SOURCES))
+SOURCES := $(filter-out src/widgets/ScrollWidget.cpp, $(SOURCES))
+SOURCES := $(filter-out src/widgets/Button.cpp, $(SOURCES))
+SOURCES := $(filter-out src/app/LightWidget.cpp, $(SOURCES))
+SOURCES := $(filter-out src/app/SVGScrew.cpp, $(SOURCES))
+SOURCES := $(filter-out src/app/SVGSlider.cpp, $(SOURCES))
+SOURCES := $(filter-out src/app/SVGKnob.cpp, $(SOURCES))
+SOURCES := $(filter-out src/app/SVGPanel.cpp, $(SOURCES))
+SOURCES := $(filter-out src/app/SVGSwitch.cpp, $(SOURCES))
+SOURCES := $(filter-out src/app/SVGPort.cpp, $(SOURCES))
+SOURCES := $(filter-out src/app/RackRail.cpp, $(SOURCES))
+SOURCES := $(filter-out src/app/Knob.cpp, $(SOURCES))
+SOURCES := $(filter-out src/app/Toolbar.cpp, $(SOURCES))
+SOURCES := $(filter-out src/app/RackScrollWidget.cpp, $(SOURCES))
+SOURCES := $(filter-out src/app/ColorLightWidget.cpp, $(SOURCES))
+SOURCES := $(filter-out src/app/ColorLightWidget.cpp, $(SOURCES))
+SOURCES := $(filter-out src/app/SpriteKnob.cpp, $(SOURCES))
+SOURCES := $(filter-out src/app/Panel.cpp, $(SOURCES))
+SOURCES := $(filter-out src/app/CircularShadow.cpp, $(SOURCES))
+SOURCES := $(filter-out src/app/Port.cpp, $(SOURCES))
+SOURCES := $(filter-out src/widgets/MenuOverlay.cpp, $(SOURCES))
+endif
 
 include arch.mk
 
 ifeq ($(ARCH), lin)
-	SOURCES += ext/osdialog/osdialog_gtk2.c
-	CFLAGS += $(shell pkg-config --cflags gtk+-2.0)
 	LDFLAGS += -rdynamic \
-		-lpthread -lGL -ldl \
-		$(shell pkg-config --libs gtk+-2.0) \
-		-Ldep/lib -lGLEW -lglfw -ljansson -lsamplerate -lcurl -lzip -lportaudio -lrtmidi
+		-lpthread -ldl \
+		-Ldep/lib -ljansson -lsamplerate -lcurl -lzip -lportaudio -lrtmidi
 	TARGET = Rack
 endif
 
@@ -72,6 +114,15 @@ clean:
 
 include compile.mk
 
+
+ifeq ($(ARM),yes)
+	CXXFLAGS+=-O3 -march=armv7-a -mtune=cortex-a8 -mfloat-abi=hard -mfpu=neon -ftree-vectorize -ffast-math -DNDEBUG -DRACK_ARM
+	CFLAGS+=-O3 -march=armv7-a -mtune=cortex-a8 -mfloat-abi=hard -mfpu=neon -ftree-vectorize -ffast-math -DNDEBUG -DRACK_ARM
+endif
+ifeq ($(EMBEDDED),yes)
+	CXXFLAGS+=-DRACK_NOGUI
+	CFLAGS+=-DRACK_NOGUI
+endif
 
 dist: all
 ifndef VERSION
@@ -142,11 +193,13 @@ ifeq ($(ARCH), lin)
 	cp Rack Rack.sh dist/Rack/
 	cp dep/lib/libsamplerate.so.0 dist/Rack/
 	cp dep/lib/libjansson.so.4 dist/Rack/
-	cp dep/lib/libGLEW.so.2.1 dist/Rack/
-	cp dep/lib/libglfw.so.3 dist/Rack/
 	cp dep/lib/libcurl.so.4 dist/Rack/
 	cp dep/lib/libzip.so.5 dist/Rack/
+ifneq ($(EMBEDDED),)
+	cp dep/lib/libglfw.so.3 dist/Rack/
+	cp dep/lib/libGLEW.so.2.1 dist/Rack/
 	cp dep/lib/libportaudio.so.2 dist/Rack/
+endif
 	cp dep/lib/librtmidi.so.4 dist/Rack/
 	mkdir -p dist/Rack/plugins
 	cp -R plugins/Fundamental/dist/Fundamental dist/Rack/plugins/

@@ -10,3 +10,6 @@
 [submodule "ext/oui-blendish"]
 	path = ext/oui-blendish
 	url = https://github.com/AndrewBelt/oui-blendish.git
+[submodule "rtmidi"]
+	path = src/core/rtmidi
+	url = git@github.com:thestk/rtmidi.git

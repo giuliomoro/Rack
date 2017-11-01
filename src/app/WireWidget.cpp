@@ -1,11 +1,14 @@
 #include "app.hpp"
 #include "engine.hpp"
+#ifndef RACK_NOGUI
 #include "components.hpp"
 #include "gui.hpp"
+#endif /*RACK_NOGUI*/
 
 
 namespace rack {
 
+#ifndef RACK_NOGUI
 static void drawPlug(NVGcontext *vg, Vec pos, NVGcolor color) {
 	NVGcolor colorOutline = nvgLerpRGBA(color, nvgRGBf(0.0, 0.0, 0.0), 0.5);
 
@@ -81,11 +84,14 @@ static const NVGcolor wireColors[] = {
 	// nvgRGB(0xaa, 0xaa, 0xaa), // white
 };
 static int lastWireColorId = -1;
+#endif /*RACK_NOGUI*/
 
 
 WireWidget::WireWidget() {
+#ifndef RACK_NOGUI
 	lastWireColorId = (lastWireColorId + 1) % LENGTHOF(wireColors);
 	color = wireColors[lastWireColorId];
+#endif /*RACK_NOGUI*/
 
 	// inputLight = construct<PolarityLight>(&PolarityLight::posColor, COLOR_GREEN, &PolarityLight::negColor, COLOR_RED);
 	// outputLight = construct<PolarityLight>(&PolarityLight::posColor, COLOR_GREEN, &PolarityLight::negColor, COLOR_RED);
@@ -123,6 +129,7 @@ void WireWidget::updateWire() {
 	}
 }
 
+#ifndef RACK_NOGUI
 Vec WireWidget::getOutputPos() {
 	if (outputPort) {
 		return outputPort->getRelativeOffset(outputPort->box.zeroPos().getCenter(), gRackWidget);
@@ -192,6 +199,7 @@ void WireWidget::drawPlugs(NVGcontext *vg) {
 	*/
 	Widget::draw(vg);
 }
+#endif /*RACK_NOGUI*/
 
 
 } // namespace rack

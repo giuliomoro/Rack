@@ -19,11 +19,13 @@ void ParamWidget::randomize() {
 		setValue(rescalef(randomf(), 0.0, 1.0, minValue, maxValue));
 }
 
+#ifndef RACK_NOGUI
 void ParamWidget::onMouseDownOpaque(int button) {
 	if (button == 1) {
 		setValue(defaultValue);
 	}
 }
+#endif /*RACK_NOGUI*/
 
 void ParamWidget::onChange() {
 	if (!module)

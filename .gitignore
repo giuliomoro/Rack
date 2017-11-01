@@ -9,3 +9,5 @@
 /patches
 /design
 .DS_Store
+.*.sw?
+*.d

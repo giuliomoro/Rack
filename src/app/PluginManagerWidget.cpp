@@ -7,9 +7,12 @@ namespace rack {
 
 
 PluginManagerWidget::PluginManagerWidget() {
+#ifndef RACK_NOGUI
 	box.size.y = BND_WIDGET_HEIGHT;
 	float margin = 5;
+#endif /*RACK_NOGUI*/
 
+#ifndef RACK_NOGUI
 	{
 		loginWidget = new Widget();
 		Vec pos = Vec(0, 0);
@@ -155,9 +158,11 @@ PluginManagerWidget::PluginManagerWidget() {
 
 		addChild(downloadWidget);
 	}
+#endif /*RACK_NOGUI*/
 }
 
 void PluginManagerWidget::step() {
+#ifndef RACK_NOGUI
 	loginWidget->visible = false;
 	manageWidget->visible = false;
 	downloadWidget->visible = false;
@@ -168,6 +173,7 @@ void PluginManagerWidget::step() {
 		manageWidget->visible = true;
 	else
 		loginWidget->visible = true;
+#endif /*RACK_NOGUI*/
 
 	Widget::step();
 }

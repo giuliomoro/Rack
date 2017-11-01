@@ -1,9 +1,12 @@
 #include "widgets.hpp"
+#ifndef RACK_NOGUI
 #include "gui.hpp"
+#endif /*RACK_NOGUI*/
 
 
 namespace rack {
 
+#ifndef RACK_NOGUI
 void Scene::setOverlay(Widget *w) {
 	if (overlay) {
 		removeChild(overlay);
@@ -28,11 +31,14 @@ Menu *Scene::createMenu() {
 
 	return menu;
 }
+#endif /*RACK_NOGUI*/
 
 void Scene::step() {
+#ifndef RACK_NOGUI
 	if (overlay) {
 		overlay->box.size = box.size;
 	}
+#endif /*RACK_NOGUI*/
 
 	Widget::step();
 }

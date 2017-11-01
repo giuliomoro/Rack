@@ -1,20 +1,25 @@
 #include "app.hpp"
 #include "engine.hpp"
 #include "plugin.hpp"
+#ifndef RACK_NOGUI
 #include "gui.hpp"
+#endif /*RACK_NOGUI*/
 #include "settings.hpp"
 #include "asset.hpp"
 #include <map>
 #include <algorithm>
 #include <thread>
 #include <set>
+#ifndef RACK_NOGUI
 #include "../ext/osdialog/osdialog.h"
+#endif /*RACK_NOGUI*/
 
 
 namespace rack {
 
 
 RackWidget::RackWidget() {
+#ifndef RACK_NOGUI
 	rails = new FramebufferWidget();
 	rails->box.size = Vec();
 	rails->oversample = 1.0;
@@ -24,6 +29,7 @@ RackWidget::RackWidget() {
 		rails->addChild(rail);
 	}
 	addChild(rails);
+#endif /*RACK_NOGUI*/
 
 	moduleContainer = new Widget();
 	addChild(moduleContainer);
@@ -47,6 +53,7 @@ void RackWidget::reset() {
 	loadPatch(assetLocal("template.vcv"));
 }
 
+#ifndef RACK_NOGUI
 void RackWidget::openDialog() {
 	std::string dir = lastPath.empty() ? assetLocal("") : extractDirectory(lastPath);
 	char *path = osdialog_file(OSDIALOG_OPEN, dir.c_str(), NULL, NULL);
@@ -82,6 +89,7 @@ void RackWidget::saveAsDialog() {
 		lastPath = pathStr;
 	}
 }
+#endif /*RACK_NOGUI*/
 
 
 void RackWidget::savePatch(std::string path) {
@@ -116,7 +124,9 @@ void RackWidget::loadPatch(std::string path) {
 	}
 	else {
 		std::string message = stringf("JSON parsing error at %s %d:%d %s\n", error.source, error.line, error.column, error.text);
+#ifndef RACK_NOGUI
 		osdialog_message(OSDIALOG_WARNING, OSDIALOG_OK, message.c_str());
+#endif /*RACK_NOGUI*/
 	}
 
 	fclose(file);
@@ -270,7 +280,9 @@ void RackWidget::fromJson(json_t *rootJ) {
 
 	// Display a message if we have something to say
 	if (!message.empty()) {
+#ifndef RACK_NOGUI
 		osdialog_message(OSDIALOG_INFO, OSDIALOG_OK, message.c_str());
+#endif /*RACK_NOGUI*/
 	}
 }
 
@@ -289,12 +301,15 @@ void RackWidget::cloneModule(ModuleWidget *m) {
 	json_t *moduleJ = m->toJson();
 	clonedModuleWidget->fromJson(moduleJ);
 	json_decref(moduleJ);
+#ifndef RACK_NOGUI
 	Rect clonedBox = clonedModuleWidget->box;
 	clonedBox.pos = m->box.pos;
 	requestModuleBoxNearest(clonedModuleWidget, clonedBox);
+#endif /*RACK_NOGUI*/
 	addModule(clonedModuleWidget);
 }
 
+#ifndef RACK_NOGUI
 bool RackWidget::requestModuleBox(ModuleWidget *m, Rect box) {
 	if (box.pos.x < 0 || box.pos.y < 0)
 		return false;
@@ -334,8 +349,10 @@ bool RackWidget::requestModuleBoxNearest(ModuleWidget *m, Rect box) {
 	}
 	return false;
 }
+#endif /*RACK_NOGUI*/
 
 void RackWidget::step() {
+#ifndef RACK_NOGUI
 	// Expand size to fit modules
 	Vec moduleSize = moduleContainer->getChildrenBoundingBox().getBottomRight();
 	// We assume that the size is reset by a parent before calling step(). Otherwise it will grow unbounded.
@@ -365,9 +382,11 @@ void RackWidget::step() {
 		settingsSave(assetLocal("settings.json"));
 	}
 
+#endif /*RACK_NOGUI*/
 	Widget::step();
 }
 
+#ifndef RACK_NOGUI
 void RackWidget::draw(NVGcontext *vg) {
 	Widget::draw(vg);
 }
@@ -529,6 +548,7 @@ void RackWidget::onZoom() {
 	rails->box.size = Vec();
 	Widget::onZoom();
 }
+#endif /*RACK_NOGUI*/
 
 
 } // namespace rack

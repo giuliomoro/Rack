@@ -1,6 +1,8 @@
 #include "settings.hpp"
 #include "app.hpp"
+#ifndef RACK_NOGUI
 #include "gui.hpp"
+#endif
 #include "engine.hpp"
 #include "plugin.hpp"
 #include <jansson.h>
@@ -13,6 +15,7 @@ static json_t *settingsToJson() {
 	// root
 	json_t *rootJ = json_object();
 
+#ifndef RACK_NOGUI
 	// token
 	json_t *tokenJ = json_string(gToken.c_str());
 	json_object_set_new(rootJ, "token", tokenJ);
@@ -35,14 +38,17 @@ static json_t *settingsToJson() {
 	// allowCursorLock
 	json_t *allowCursorLockJ = json_boolean(gAllowCursorLock);
 	json_object_set_new(rootJ, "allowCursorLock", allowCursorLockJ);
+#endif /*RACK_NOGUI*/
 
 	// sampleRate
 	json_t *sampleRateJ = json_real(engineGetSampleRate());
 	json_object_set_new(rootJ, "sampleRate", sampleRateJ);
 
+#ifndef RACK_NOGUI
 	// plugLight
 	json_t *plugLightJ = json_boolean(gToolbar->plugLightButton->value > 0.0);
 	json_object_set_new(rootJ, "plugLight", plugLightJ);
+#endif /*RACK_NOGUI*/
 
 	// lastPath
 	json_t *lastPathJ = json_string(gRackWidget->lastPath.c_str());
@@ -52,6 +58,7 @@ static json_t *settingsToJson() {
 }
 
 static void settingsFromJson(json_t *rootJ) {
+#ifndef RACK_NOGUI
 	// token
 	json_t *tokenJ = json_object_get(rootJ, "token");
 	if (tokenJ)
@@ -78,6 +85,7 @@ static void settingsFromJson(json_t *rootJ) {
 	json_t *allowCursorLockJ = json_object_get(rootJ, "allowCursorLock");
 	if (allowCursorLockJ)
 		gAllowCursorLock = json_is_true(allowCursorLockJ);
+#endif /*RACK_NOGUI*/
 
 	// sampleRate
 	json_t *sampleRateJ = json_object_get(rootJ, "sampleRate");
@@ -86,10 +94,12 @@ static void settingsFromJson(json_t *rootJ) {
 		engineSetSampleRate(sampleRate);
 	}
 
+#ifndef RACK_NOGUI
 	// plugLight
 	json_t *plugLightJ = json_object_get(rootJ, "plugLight");
 	if (plugLightJ)
 		gToolbar->plugLightButton->setValue(json_is_true(plugLightJ) ? 1.0 : 0.0);
+#endif /*RACK_NOGUI*/
 
 	// lastPath
 	json_t *lastPathJ = json_object_get(rootJ, "lastPath");

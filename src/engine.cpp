@@ -6,7 +6,9 @@
 #include <algorithm>
 #include <chrono>
 #include <thread>
+#ifndef RACK_ARM
 #include <xmmintrin.h>
+#endif
 
 #include "engine.hpp"
 #include "util.hpp"
@@ -90,7 +92,9 @@ static void engineStep() {
 static void engineRun() {
 	// Set CPU to denormals-are-zero mode
 	// http://carlh.net/plugins/denormals.php
+#ifndef RACK_ARM
 	_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+#endif
 
 	// Every time the engine waits and locks a mutex, it steps this many frames
 	const int mutexSteps = 64;
